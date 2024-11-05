@@ -30,4 +30,11 @@ export const commonStyles = StyleSheet.create({
     paddingLeft: 20,
     padding: 5,
   },
+  button: {
+    width: '100%',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });

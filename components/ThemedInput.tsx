@@ -12,7 +12,7 @@ export function ThemedInput({ style, lightColor, darkColor, ...otherProps }: The
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
   const placeholderTextColor = useThemeColor({ light: '#A9A9A9', dark: '#D3D3D3' }, 'text');
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#333333' }, 'background');
-  const borderColor = color === lightColor ? '#CCCCCC' : '#444444'; 
+  const borderColor = useThemeColor({ light: lightColor, dark: darkColor }, 'border');
 
   return (
     <View style={[commonStyles.inputWrapper, { borderColor }]}>
