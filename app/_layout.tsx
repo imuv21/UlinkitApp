@@ -7,8 +7,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 import Toast from 'react-native-toast-message';
-import toastConfig from '../components/ThemedToasts';
-
+import toastConfig from '@/components/ThemedToasts';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from '@/slices/store';
@@ -38,11 +37,11 @@ export default function RootLayout() {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Toast config={toastConfig}/>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
+          <Toast config={toastConfig} />
         </ThemeProvider>
       </PersistGate>
     </Provider>
