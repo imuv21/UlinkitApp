@@ -1,14 +1,19 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { commonStyles } from '@/assets/commonStyles';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
+
 
 export default function HomeScreen() {
+
+  const router = useRouter();
+
   return (
     <ParallaxScrollView bgColor={{ light: '#A1CEDC', dark: '#1D3D47' }}>
-      <ThemedView style={commonStyles.screenPad}>
+      <ThemedView style={commonStyles.screen}>
         <ThemedView style={styles.titleContainer}>
           <ThemedText type="title">Welcome!</ThemedText>
           <HelloWave />
@@ -38,6 +43,9 @@ export default function HomeScreen() {
             <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
             <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
             <ThemedText type="defaultSemiBold">app-example</ThemedText>.
+            <TouchableOpacity onPress={() => router.push('/')}>
+              <ThemedText type='link'>login</ThemedText>
+            </TouchableOpacity>
           </ThemedText>
         </ThemedView>
       </ThemedView>

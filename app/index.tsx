@@ -1,15 +1,17 @@
+import Toast from 'react-native-toast-message';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { login } from '../slices/authSlice';
+import { useAppDispatch, useAppSelector } from '@/hooks/useSelpatch';
 import { commonStyles } from '@/assets/commonStyles';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedInput } from '@/components/ThemedInput';
-import { login } from '../../slices/authSlice';
-import { useAppDispatch, useAppSelector } from '@/hooks/useSelpatch';
 import { ThemedButton } from '@/components/ThemedButton';
-import Toast from 'react-native-toast-message';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
+
 
 interface FormData {
   username: string;
@@ -24,21 +26,16 @@ const initialFormData: FormData = {
 
 export default function Login() {
 
+  const { logStatus } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [submitting, setSubmitting] = useState(false);
-  const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
-  const { user, token, status } = useAppSelector((state) => state.auth);
-
-  //password hide and show
+  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible);
-  };
-
 
   const validateForm = () => {
-    const newErrors: { username?: string; password?: string } = {};
+    const newErrors: Partial<Record<keyof FormData, string>> = {};
 
     if (!formData.username) {
       newErrors.username = 'Email is required';
@@ -67,9 +64,10 @@ export default function Login() {
     setSubmitting(true);
     try {
       const response = await dispatch(login(formData)).unwrap();
-      if (response.status === true) {
+      if (logStatus === 'success') {
         console.log(response.message);
-        Toast.show({ type: 'successToast', text1: 'Success', text2: 'User has logged in successfully!' });
+        Toast.show({ type: 'successToast', text1: 'Login Successful', text2: 'User has logged in successfully!' });
+        router.push('/explore');
       } else {
         console.log(response.message);
         Toast.show({ type: 'errorToast', text1: 'Error', text2: 'Something went wrong!' });
@@ -92,65 +90,41 @@ export default function Login() {
     <ParallaxScrollView bgColor={{ light: '#A1CEDC', dark: '#1D3D47' }}>
       <ThemedView style={commonStyles.screen}>
         <ThemedText type='title'>Login</ThemedText>
-        <ThemedView style={styles.formCont}>
 
-          <ThemedView style={styles.fieldCont}>
+        <ThemedView style={commonStyles.formCont}>
+          <ThemedView style={commonStyles.fieldCont}>
             <ThemedInput placeholder="Enter your email" autoComplete="email" keyboardType="email-address" textContentType="emailAddress"
               onChangeText={text => handleChange('username', text)} />
             {errors.username && <ThemedText type='error'>{errors.username}</ThemedText>}
           </ThemedView>
 
-          <ThemedView style={styles.fieldCont}>
-            <ThemedView style={styles.passfield}>
-              <ThemedInput placeholder="Enter your password" autoComplete="password" keyboardType="default" textContentType="password" autoCapitalize="none" 
-               secureTextEntry={!passwordVisible}  onChangeText={text => handleChange('password', text)} />
+          <ThemedView style={commonStyles.fieldCont}>
+            <ThemedView style={commonStyles.passfield}>
+              <ThemedInput placeholder="Enter your password" autoComplete="password" keyboardType="default" textContentType="password" autoCapitalize="none"
+                secureTextEntry={!passwordVisible} onChangeText={text => handleChange('password', text)} />
 
-              <TouchableOpacity style={styles.iconCont} onPress={() => setPasswordVisible(!passwordVisible)}>
-                {passwordVisible ? <Ionicons name="eye" style={styles.icon} /> : <Ionicons name="eye-off" style={styles.icon} />}
+              <TouchableOpacity style={commonStyles.iconCont} onPress={() => setPasswordVisible(!passwordVisible)}>
+                {passwordVisible ? <Ionicons name="eye" style={commonStyles.icon} /> : <Ionicons name="eye-off" style={commonStyles.icon} />}
               </TouchableOpacity>
             </ThemedView>
             {errors.password && <ThemedText type='error'>{errors.password}</ThemedText>}
           </ThemedView>
 
-          <ThemedButton text={submitting ? `Loging...` : `Login`} onPress={handleSubmit} style={commonStyles.button} textStyle={{ color: '#ffffff', fontSize: 16, fontWeight: 'bold' }} disabled={submitting} />
+          <View style={commonStyles.clickCont}>
+            <ThemedButton text={submitting ? `Loging...` : `Login`} onPress={handleSubmit} style={commonStyles.button} textStyle={{ color: '#ffffff', fontSize: 16, fontWeight: 'bold' }} disabled={submitting} />
+            <View style={commonStyles.click}>
+              <ThemedText type='default' >New to Ulinkit?</ThemedText>
+              <TouchableOpacity onPress={() => router.push('/signup')}>
+                <ThemedText type='link'>Sign up</ThemedText>
+              </TouchableOpacity>
+            </View>
+          </View>
         </ThemedView>
+
       </ThemedView>
     </ParallaxScrollView>
   );
 };
 
-const styles = StyleSheet.create({
-  formCont: {
-    width: '100%',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 20,
-  },
-  fieldCont: {
-    width: '100%',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 5,
-  },
-  passfield: {
-    position: 'relative',
-    width: '100%',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 5,
-  },
-  iconCont: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-  },
-  icon: {
-    fontSize: 20,
-    color: 'gray',
-  }
-});
 
 
